@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+    content="Deformable Neural Radiance Fields creates free-viewpoint portraits (nerfies) from casually captured videos.">
+  <meta name="keywords" content="Nerfies, D-NeRF, NeRF">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ChromaDistill</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/palette.jpeg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+
+<body>
+
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+  </nav>
+
+
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title">ChromaDistill : Colorizing Monochrome Radiance Fields with Knowledge Distillation</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hero teaser">
+    <div class="container is-max-desktop">
+      <div class="hero-body">
+        <img src="./static/images/Teaser-Image.jpg" class="interpolation-image"
+          alt="Interpolate start reference image." />
+        <h6>
+          (a) Overview of our method. Given input multi-view grey-scale views, the proposed approach “ChromaDistill” is able to
+          generate
+          colorized views which are 3D consistent. Two colorized novel-views (b) and (e) by I. Image-colorization
+          baseline, II. Video-colorization
+          baseline, and III. our approach on “playground” scene from LLFF [ 20 ] dataset. State-of-the-art colorization
+          baselines generate 3D
+          inconsistent novel-views as shown in zoomed-in regions in (c) and (d).
+        </h6>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <!-- Abstract. -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content has-text-justified">
+            <p>
+              Neural radiance field (NeRF) and Gaussian-Splatting based methods enable high-quality novel-view synthesis for multi-view images. The question arises: Can these representations generate colorized novel views when provided with monochromatic(grey-scale) inputs? Beyond its visual aesthetic significance in portraying worlds, color plays a pivotal role in downstream applications such as open-set scene decomposition. This research presents a method for synthesizing colorized novel views from input grey-scale multi-view images. Applying image or video-based colorization techniques to generated grey-scale novel views demonstrates artifacts arising from inconsistencies across views. Even training a radiance field network on colorized grey-scale image sequences fails to resolve the 3D consistency issue. We propose a distillation-based approach, leveraging knowledge from colorization networks trained on natural images and transferring it to the chosen 3D representation. Specifically, our method uses the radiance field network as a 3D representation and transfers knowledge from existing 2D colorization methods. This strategy introduces no additional weights or computational overhead to the original representation during inference. The experimental results demonstrate the superiority of our proposed method in generating high-quality colorized novel views for indoor and outdoor scenes, showcasing notable advantages in cross-view consistency compared to baseline approaches. Additionally, we illustrate the seamless extension of our method to a Gaussian-Splatting representation. 
+              </p>
+              <p>
+                Further, we validate the efficacy of our approach in diverse applications, notably in the colorization of radiance field networks trained from two distinct sources: 1.) Infra-Red (IR) multi-view images and 2.) Legacy grey-scale multi-view image sequences.
+            </p>
+          </div>
+        </div>
+      </div>
+      <!--/ Abstract. -->
+
+      <!-- Paper video. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Video</h2>
+        <div class="publication-video">
+          <!-- <iframe src="main-video-.mp4"
+                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+           -->
+          <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="../Chroma-Distill-main-video.mp4" type="video/mp4">
+          </video>
+          
+        </div>
+      </div>
+    </div>
+    <!--/ Paper video. -->
+  </section>
+
+  <section class="hero is-light is-small">
+    <h1> <center><b> Leaves </b></center></h1>
+    <div class="hero-body">
+      <div class="container">
+        <div id="results-carousel" class="carousel results-carousel">
+          <div>
+            <p>
+              <center>Greyscale NeRF</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/leaves/leaves_grey.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>BigColor [12] → NeRF</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/leaves/leaves_bgcolornerf.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>Ours(BigColor [12])</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/leaves/leaves_bigcolor_ours.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>NeRF → DeepRemaster [10]</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%" width="100%">
+              <source src="./static/videos/leaves/leaves_deepremaster.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>Zhang et al. [40] → NeRF</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/leaves/leaves_zhangnerf.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>Ours( Zhang et al. [40])</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/leaves/leaves_zhang_ours.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>NeRF → DeOldify [26]</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/leaves/leaves_deoldify.mp4" type="video/mp4">
+
+            </video>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hero is-light is-small">
+    <h1> <center><b> Cake </b></center></h1>
+    <div class="hero-body">
+      <div class="container">
+        <div id="results-carousel" class="carousel results-carousel">
+          <div>
+            <p>
+              <center>Greyscale NeRF</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/cake/cake_grey.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>BigColor [12] → NeRF</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/cake/cake_bgcolornerf.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>Ours(BigColor [12])</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/cake/cake_bigcolor_ours.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>NeRF → DeepRemaster [10]</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%" width="100%">
+              <source src="./static/videos/cake/cake_deepremaster.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>Zhang et al. [40] → NeRF</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/cake/cake_zhangnerf.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>Ours( Zhang et al. [40])</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/cake/cake_zhang_ours.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>NeRF → DeOldify [26]</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/cake/cake_deoldify.mp4" type="video/mp4">
+
+            </video>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hero is-light is-small">
+    <h1> <center><b> Truck </b></center></h1>
+    <div class="hero-body">
+      <div class="container">
+        <div id="results-carousel" class="carousel results-carousel">
+          <div>
+            <p>
+              <center>Greyscale NeRF</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/truck/truck_grey.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>BigColor [12] → NeRF</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/truck/truck_bgcolornerf.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>Ours(BigColor [12])</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/truck/truck_bigcolor_ours.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>NeRF → DeepRemaster [10]</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%" width="100%">
+              <source src="./static/videos/truck/truck_deepremaster.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>Zhang et al. [40] → NeRF</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/truck/truck_zhangnerf.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>Ours( Zhang et al. [40])</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/truck/truck_zhang_ours.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>NeRF → DeOldify [26]</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/truck/truck_deoldify.mp4" type="video/mp4">
+
+            </video>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hero is-light is-small">
+    <h1> <center><b> Pasta </b></center></h1>
+    <div class="hero-body">
+      <div class="container">
+        <div id="results-carousel" class="carousel results-carousel">
+          <div>
+            <p>
+              <center>Greyscale NeRF</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/pasta/test_renders_path_greyscale.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>BigColor [12] → NeRF</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/pasta/test_renders_path_plenoxels_bgcolor.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>Ours(BigColor [12])</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/pasta/test_renders_path_teacher_bigcolor.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>NeRF → DeepRemaster [10]</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%" width="100%">
+              <source src="./static/videos/pasta/pasta_deepremaster.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>Zhang et al. [40] → NeRF</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/pasta/test_renders_path_plenoxels_zhang.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>Ours( Zhang et al. [40])</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/pasta/test_renders_path_teacher_zhang.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>NeRF → DeOldify [26]</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/pasta/test_renders_path_deoldify.mp4" type="video/mp4">
+
+            </video>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="hero is-light is-small">
+    <h1> <center><b> M60 </b></center></h1>
+    <div class="hero-body">
+      <div class="container">
+        <div id="results-carousel" class="carousel results-carousel">
+          <div>
+            <p>
+              <center>Greyscale NeRF</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/m60/grey.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>BigColor [12] → NeRF</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/m60/bigcolor_nerf.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>Ours(BigColor [12])</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/m60/our_bigcolor.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>NeRF → DeepRemaster [10]</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%" width="100%">
+              <source src="./static/videos/m60/deepremaster.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>Zhang et al. [40] → NeRF</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/m60/zhang_nerf.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>Ours( Zhang et al. [40])</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/m60/our_zhang.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>NeRF → DeOldify [26]</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/m60/video_deoldify.mp4" type="video/mp4">
+
+            </video>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="hero is-light is-small">
+    <h1> <center><b> Playground </b></center></h1>
+    <div class="hero-body">
+      <div class="container">
+        <div id="results-carousel" class="carousel results-carousel">
+          <div>
+            <p>
+              <center>Greyscale NeRF</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/playground/grey.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>BigColor [12] → NeRF</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/playground/bgcolornerf.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>Ours(BigColor [12])</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/playground/ours_bigcolor.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>NeRF → DeepRemaster [10]</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%" width="100%">
+              <source src="./static/videos/playground/deepremaster.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>Zhang et al. [40] → NeRF</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/playground/zhang_nerf.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>Ours( Zhang et al. [40])</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/playground/our_zhang.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div>
+            <p>
+              <center>NeRF → DeOldify [26]</center>
+            </p>
+            <video poster="" autoplay controls muted loop playsinline height="100%">
+              <source src="./static/videos/playground/video_deoldify.mp4" type="video/mp4">
+
+            </video>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+  
+</body>
+
+</html>
